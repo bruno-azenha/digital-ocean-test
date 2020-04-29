@@ -19,7 +19,8 @@ config :ocean, OceanWeb.Endpoint,
       "--watch-stdin",
       cd: Path.expand("../assets", __DIR__)
     ]
-  ]
+  ],
+  server: true
 
 # ## SSL Support
 #

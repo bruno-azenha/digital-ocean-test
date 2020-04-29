@@ -10,6 +10,7 @@ use Mix.Config
 # which you should run after static files are built and
 # before starting your production server.
 config :ocean, OceanWeb.Endpoint,
+  server: true,
   url: [host: "example.com", port: 80],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
@@ -49,7 +50,3 @@ config :logger, level: :info
 #       force_ssl: [hsts: true]
 #
 # Check `Plug.SSL` for all available options in `force_ssl`.
-
-# Finally import the config/prod.secret.exs which loads secrets
-# and configuration from environment variables.
-import_config "prod.secret.exs"
