@@ -1,19 +1,50 @@
 version: 2.1
 jobs:
-  build:
+  Fetch-Code:
     docker:
       - image: bitwalker/alpine-elixir-phoenix:1.10.2
     steps:
       - checkout
       - run:
+          command: |
+            cd ocean
+  Show-Code:
+    docker:
+      - image: bitwalker/alpine-elixir-phoenix:1.10.2
+    steps:
+      - run:
           name: Code Has Arrived
           command: |
             ls -al
             echo '^^^That should look familiar^^^'
-      - run:
-          name: Ocean Tests
-          command: |
-            cd ocean
-            MIX_ENV=test mix deps.get
-            MIX_ENV=test mix test
+  Fetch-Dependencies:
+      docker:
+        - image: bitwalker/alpine-elixir-phoenix:1.10.2
+      steps:
+        - run:
+            name: Ocean Tests
+            command: |
+              MIX_ENV=test mix deps.get
+  Run-Tests:
+      docker:
+        - image: bitwalker/alpine-elixir-phoenix:1.10.2
+      steps: 
+        - run:
+            name: Ocean Tests
+            command: |
+              MIX_ENV=test mix test
 
+workflows:
+  version: 2.1
+  Example_Workflow:
+    jobs:
+      - Fetch-Code
+      - Show-Code:
+          requires:
+            - Fetch-Code
+      - Fetch-Dependencies:
+          requires:
+            - Fetch-Code
+      - Run-Tests:
+          requires:
+            - Fetch-Dependencies
