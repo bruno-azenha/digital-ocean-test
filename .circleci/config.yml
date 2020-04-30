@@ -36,8 +36,6 @@ jobs:
           root: /tmp/workspace
           paths:
             - releases
-          
-        
 
   Deploy-To-Droplet:
     docker:
@@ -47,8 +45,7 @@ jobs:
           at: /tmp/workspace
       - run: 
           command: | 
-            cd /tmp/workspace/releases
-            ls -al
+            scp -o StrictHostKeyChecking=no -r /tmp/workspace/releases/ocean root@178.128.155.192.com://home/root/
 
 workflows:
   version: 2.1
