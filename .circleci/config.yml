@@ -6,30 +6,62 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Run Tests
+          working_directory: ocean
           command: |
-            cd ocean
-            echo "Fetching Dependencies"
             MIX_ENV=test mix deps.get
-            echo "Running Tests"
             MIX_ENV=test mix test
 
-  Deploy:
+  Build-Release:
     docker:
       - image: bitwalker/alpine-elixir-phoenix:1.10.2
     steps:
       - checkout
       - run:
-          command: echo "This Worked!!"
+          name: Build Release
+          working_directory: ocean
+          command: |
+            mix deps.get --only prod
+            MIX_ENV=prod mix compile
+            npm install --prefix ./assets
+            npm run deploy --prefix ./assets
+            MIX_ENV=prod mix phx.digest
+            MIX_ENV=prod mix release
+      - run:
+          name: Persist Built Release
+          command: |
+            mkdir -p /tmp/workspace/releases
+            mv ./ocean/_build/prod/rel/ocean/bin/ocean /tmp/workspace/releases
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - releases
+          
+        
+
+  Deploy-To-Droplet:
+    docker:
+      - image: bitwalker/alpine-elixir-phoenix:1.10.2
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - run: 
+          command: | 
+            cd /tmp/workspace/releases
+            ls -al
 
 workflows:
   version: 2.1
   Deploy_Workflow:
     jobs:
       - Run-Tests
-      - Hold-For-Approval:
-          type: approval
+      - Build-Release:
           requires:
             - Run-Tests
-      - Deploy:
+      - Wait-Approval:
+          type: approval
           requires:
-            - Hold-For-Approval
+            - Build-Release
+      - Deploy-To-Droplet:
+          requires:
+            - Wait-Approval
