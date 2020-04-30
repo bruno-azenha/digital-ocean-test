@@ -10,4 +10,10 @@ jobs:
           command: |
             ls -al
             echo '^^^That should look familiar^^^'
+      - run:
+          name: Ocean Tests
+          command: |
+            cd ocean
+            MIX_ENV=test mix deps.get
+            MIX_ENV=test mix test
 
