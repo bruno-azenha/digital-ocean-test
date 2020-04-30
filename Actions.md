@@ -24,9 +24,13 @@ Get the Ubuntu 18.04 LTS
 
 - Setup a new project from the new github repo (Circle CI recognizes elixir and gives me a proper config file for it)
 
+## 
+
 ## Commands
 
 ``` bash
 sudo apt-get update
 sudo apt-get upgrade
 ```
+
+## Found material

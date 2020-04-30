@@ -39,25 +39,24 @@ jobs:
 
   Deploy-To-Droplet:
     docker:
-      - image: bitwalker/alpine-elixir-phoenix:1.10.2
+      - image: circleci/elixir
     steps:
       - attach_workspace:
           at: /tmp/workspace
       - run: 
           command: | 
-            scp -o StrictHostKeyChecking=no -r /tmp/workspace/releases/ocean root@178.128.155.192.com://home/root/
+            scp -o StrictHostKeyChecking=no /tmp/workspace/releases/ocean $DROPLET_USER@$DROPLET_IP:/home/circleci/releases
 
 workflows:
   version: 2.1
   Deploy_Workflow:
     jobs:
       - Run-Tests
-      - Build-Release:
-          requires:
-            - Run-Tests
+      - Build-Release
       - Wait-Approval:
           type: approval
           requires:
+            - Run-Tests
             - Build-Release
       - Deploy-To-Droplet:
           requires:
