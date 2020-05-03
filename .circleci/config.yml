@@ -31,7 +31,8 @@ jobs:
           name: Persist Built Release
           command: |
             mkdir -p /tmp/workspace/releases
-            mv ./ocean/_build/prod/rel/ocean/bin/ocean /tmp/workspace/releases
+            cd ./ocean/_build/prod/rel/
+            tar -zcvf /tmp/workspace/releases/ocean.tar.gz ocean
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
@@ -45,7 +46,7 @@ jobs:
           at: /tmp/workspace
       - run: 
           command: | 
-            scp -o StrictHostKeyChecking=no /tmp/workspace/releases/ocean circleci@178.128.155.192:/home/circleci/releases/
+            scp -o StrictHostKeyChecking=no /tmp/workspace/releases/ocean.tar.gz circleci@178.128.155.192:/home/circleci/ocean.tar.gz
 
 workflows:
   version: 2.1
@@ -53,11 +54,12 @@ workflows:
     jobs:
       - Run-Tests
       - Build-Release
-      - Wait-Approval:
-          type: approval
+      # - Wait-Approval:
+      #     type: approval
+      #     requires:
+      #       - Run-Tests
+      #       - Build-Release
+      - Deploy-To-Droplet:
           requires:
             - Run-Tests
             - Build-Release
-      - Deploy-To-Droplet:
-          requires:
-            - Wait-Approval
