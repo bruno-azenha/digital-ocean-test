@@ -45,7 +45,7 @@ jobs:
           at: /tmp/workspace
       - run: 
           command: | 
-            scp -o StrictHostKeyChecking=no /tmp/workspace/releases/ocean $DROPLET_USER@$DROPLET_IP:/home/circleci/releases
+            scp -o StrictHostKeyChecking=no /tmp/workspace/releases/ocean circleci@178.128.155.192:/home/circleci/releases/
 
 workflows:
   version: 2.1
